@@ -1,18 +1,9 @@
-/**
- * logging_middleware/src/logger.js
- *
- * Reusable Log function — sends structured logs to the test server.
- * Uses ES6 module syntax.
- *
- * Usage:
- *   import { Log } from '../logging_middleware/src/logger.js';
- *   await Log("backend", "info", "route", "Server started on port 3000");
- */
+
 
 import axios from "axios";
 import "dotenv/config";
 
-// ─── Valid field values (as per test server constraints) ─────────────────────
+//Valid field values 
 
 const VALID_STACKS = ["backend", "frontend"];
 
@@ -28,7 +19,6 @@ const VALID_PACKAGES = [
   "auth", "config", "middleware", "utils",
 ];
 
-// ─── Internal: validate all fields before sending ────────────────────────────
 
 const validateFields = (stack, level, pkg, message) => {
   if (!VALID_STACKS.includes(stack)) {
@@ -45,7 +35,6 @@ const validateFields = (stack, level, pkg, message) => {
   }
 };
 
-// ─── Internal: print formatted log line to console ───────────────────────────
 
 const printToConsole = (stack, level, pkg, message) => {
   const timestamp = new Date().toISOString();
@@ -53,23 +42,12 @@ const printToConsole = (stack, level, pkg, message) => {
   console.log(`[${timestamp}] [${levelPadded}] [${stack}:${pkg}] ${message}`);
 };
 
-// ─── Main exported Log function ───────────────────────────────────────────────
+// Main exported Log function 
 
-/**
- * Log(stack, level, pkg, message)
- *
- * @param {string} stack   - "backend" | "frontend"
- * @param {string} level   - "debug" | "info" | "warn" | "error" | "fatal"
- * @param {string} pkg     - package name (see valid list above)
- * @param {string} message - descriptive log message
- * @returns {Promise<object|null>} - server response or null on failure
- */
 export const Log = async (stack, level, pkg, message) => {
   try {
-    // Validate before doing anything
     validateFields(stack, level, pkg, message);
 
-    // Always print to console for local visibility
     printToConsole(stack, level, pkg, message);
 
     const token = process.env.AUTH_TOKEN;
@@ -93,10 +71,9 @@ export const Log = async (stack, level, pkg, message) => {
       }
     );
 
-    return response.data; // { logID, message }
+    return response.data; 
 
   } catch (error) {
-    // Never crash the calling application due to a logger failure
     if (error.response) {
       console.error(`[Logger] Server error ${error.response.status}:`, error.response.data);
     } else if (error.request) {
